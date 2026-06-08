@@ -25,6 +25,11 @@ jobs:
         run: chmod +x mvnw
 
       - name: Build project
+        env:
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          AWS_BUCKET: ${{ secrets.AWS_BUCKET }}
+          AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
+          AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY }}
         run: ./mvnw clean package
 
       - name: Login to Docker Hub
