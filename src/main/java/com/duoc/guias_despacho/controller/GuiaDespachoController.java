@@ -68,4 +68,9 @@ public class GuiaDespachoController {
     public void eliminarGuia(@PathVariable Long id) {
         service.eliminar(id);
     }
+
+    @GetMapping("/test")
+    public String test() {
+        return "Deploy automático funcionando >:O";
+    }
 }
