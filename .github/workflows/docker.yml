@@ -43,3 +43,22 @@ jobs:
 
       - name: Push Docker image
         run: docker push itseliii/guias-despacho:latest
+
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            docker stop $(docker ps -q) || true
+            docker rm $(docker ps -aq) || true
+
+            docker pull itseliii/guias-despacho:latest
+
+            docker run -d -p 8080:8080 \
+              -e AWS_REGION=${{ secrets.AWS_REGION }} \
+              -e AWS_BUCKET=${{ secrets.AWS_BUCKET }} \
+              -e AWS_ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY }} \
+              -e AWS_SECRET_KEY=${{ secrets.AWS_SECRET_KEY }} \
+              itseliii/guias-despacho:latest  
