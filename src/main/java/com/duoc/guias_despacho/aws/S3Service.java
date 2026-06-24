@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.core.sync.RequestBody;
-
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import java.nio.charset.StandardCharsets;
 
@@ -41,5 +41,15 @@ public class S3Service {
                 .build();
 
         return new String(s3Client.getObjectAsBytes(request).asByteArray(), StandardCharsets.UTF_8);// y acá obtenemos el contenido del objeto y lo convertimos a string para devolverlo
+    }
+
+    public void eliminarArchivo(String rutaS3){
+
+        DeleteObjectRequest request = DeleteObjectRequest.builder()
+            .bucket(bucket)
+            .key(rutaS3)
+            .build();
+
+        s3Client.deleteObject(request);
     }
 }

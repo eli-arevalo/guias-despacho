@@ -57,16 +57,43 @@ public class GuiaDespachoService {
 
         GuiaDespacho guia = repository.findById(id).orElseThrow();
 
+        //primero eliminamos el archivo antiguo
+        s3Service.eliminarArchivo(guia.getRutaS3());
+
+        //ya luego actualizamos los datos
         guia.setNumeroGuia(nuevaGuiaDespacho.getNumeroGuia());
         guia.setTransportista(nuevaGuiaDespacho.getTransportista());
         guia.setDestino(nuevaGuiaDespacho.getDestino());
         guia.setFecha(nuevaGuiaDespacho.getFecha());
 
+        //despues generamos nuevo name y ruta
+        String nombreArchivo = "guia_"+ guia.getNumeroGuia() + ".txt";
+
+        String rutaS3 = guia.getFecha() + "/"
+            + guia.getTransportista() + "/"
+            + nombreArchivo;
+
+        // y ahorita el nuevo contenido
+        String contenido = "Número de Guía: " + guia.getNumeroGuia() + "\n" +
+            "Transportista: " + guia.getTransportista() + "\n" +
+            "Destino: " + guia.getDestino() + "\n" +
+            "Fecha: " + guia.getFecha();
+
+        // y ya por fin subimos version actualizada :D
+        s3Service.subirTexto(rutaS3, contenido);
+
+        guia.setNombreArchivo(nombreArchivo);
+        guia.setRutaS3(rutaS3);
+
         return repository.save(guia);
     }
 
     public void eliminar(Long id) {
-        repository.deleteById(id);
+        
+        GuiaDespacho guia = repository.findById(id).orElseThrow();
+        s3Service.eliminarArchivo(guia.getRutaS3());
+
+        repository.delete(guia);
     }
 
 }
