@@ -38,11 +38,8 @@ public class GuiaDespachoController {
     }
 
     @GetMapping("/descargar/{id}") //hacemos un endpoint de descarga
-    public String descargarGuia(@PathVariable Long id, @RequestParam String token) {
+    public String descargarGuia(@PathVariable Long id) {
         
-        if(!token.equals("admin321")){//hacemos una validacion ultra simple para simular el control de acceso
-            return "Token inválido. Acceso denegado >:c";
-        }
         GuiaDespacho guia = service.buscarPorId(id);
 
         return s3Service.obtenerTexto(guia.getRutaS3());
