@@ -43,6 +43,15 @@ public class S3Service {
         return new String(s3Client.getObjectAsBytes(request).asByteArray(), StandardCharsets.UTF_8);// y acá obtenemos el contenido del objeto y lo convertimos a string para devolverlo
     }
 
+    public byte[] descargarArchivo(String rutaS3){
+
+        GetObjectRequest request = GetObjectRequest.builder()
+            .bucket(bucket)
+            .key(rutaS3)
+            .build();
+        return s3Client.getObjectAsBytes(request).asByteArray();
+    }
+
     public void eliminarArchivo(String rutaS3){
 
         DeleteObjectRequest request = DeleteObjectRequest.builder()

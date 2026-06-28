@@ -3,8 +3,12 @@ package com.duoc.guias_despacho.controller;
 import com.duoc.guias_despacho.service.GuiaDespachoService;
 import com.duoc.guias_despacho.aws.S3Service;
 import com.duoc.guias_despacho.model.GuiaDespacho;
+
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import java.util.List;
 
 @RestController
@@ -38,11 +42,17 @@ public class GuiaDespachoController {
     }
 
     @GetMapping("/descargar/{id}") //hacemos un endpoint de descarga
-    public String descargarGuia(@PathVariable Long id) {
-        
+    public ResponseEntity<byte[]> descargarGuia(@PathVariable Long id) {
+
         GuiaDespacho guia = service.buscarPorId(id);
 
-        return s3Service.obtenerTexto(guia.getRutaS3());
+        byte[] archivo = s3Service.descargarArchivo(guia.getRutaS3());
+
+        return ResponseEntity.ok()
+            .header(HttpHeaders.CONTENT_DISPOSITION,
+                    "attachment; filename=\"" + guia.getNombreArchivo() + "\"")
+            .contentType(MediaType.TEXT_PLAIN)
+            .body(archivo);
 
     }
 
